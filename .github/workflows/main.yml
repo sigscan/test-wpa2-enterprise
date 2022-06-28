@@ -37,7 +37,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: my-artifact
-          path: |
-            "${{ github.workspace }}/${{ env.main-path }}/build/bootloader/bootloader.bin"
-            "${{ github.workspace }}/${{ env.main-path }}/build/partition_table/partition_table.bin"
-            "${{ github.workspace }}/${{ env.main-path }}/build/wpa2-enterprise.bin"
+          path: "${{ github.workspace }}/${{ env.main-path }}/build/wpa2-enterprise.bin"
