@@ -1,0 +1,44 @@
+name: Build app
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      main-path: app
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.main-path }}
+
+      - name: Build
+        uses: volca/esp-idf-v4-container-action@v4.4.1
+        id: idf_build
+        env:
+          UNKNOWN_KEY: ${{ secrets.UNKNOWN_KEY }}
+        with:
+          entrypoint: /github/workspace/${{ env.main-path }}/tools/action-build.sh
+
+      - name: Compute SHA256 for bin and elf files
+        if: steps.idf_build.outputs.result == 0
+        run: |
+          fileE=$(find "${{ github.workspace }}/${{ env.main-path }}/build" -maxdepth 1 -type f -name '*.elf')
+          fileB=${fileE%.elf}.bin
+          declare -a files
+          files=("$fileE" "$fileB")
+          for file in "${files[@]}"; do
+            hash=$(sha256sum -b "$file")
+            stat -c"${hash%% *} ${file##*/} %s" "$file"
+          done
+
+      - name: Release
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: "${{ github.workspace }}/${{ env.main-path }}/build/bootloader/bootloader.bin"
+          path: "${{ github.workspace }}/${{ env.main-path }}/build/partition_table/partition_table.bin"
+          path: "${{ github.workspace }}/${{ env.main-path }}/build/wpa2-enterprise.bin"

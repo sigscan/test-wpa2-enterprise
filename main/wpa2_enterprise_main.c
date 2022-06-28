@@ -58,28 +58,6 @@ const int CONNECTED_BIT = BIT0;
 
 static const char *TAG = "example";
 
-/* CA cert, taken from wpa2_ca.pem
-   Client cert, taken from wpa2_client.crt
-   Client key, taken from wpa2_client.key
-
-   The PEM, CRT and KEY file were provided by the person or organization
-   who configured the AP with wpa2 enterprise.
-
-   To embed it in the app binary, the PEM, CRT and KEY file is named
-   in the component.mk COMPONENT_EMBED_TXTFILES variable.
-*/
-#ifdef CONFIG_EXAMPLE_VALIDATE_SERVER_CERT
-extern uint8_t ca_pem_start[] asm("_binary_wpa2_ca_pem_start");
-extern uint8_t ca_pem_end[]   asm("_binary_wpa2_ca_pem_end");
-#endif /* CONFIG_EXAMPLE_VALIDATE_SERVER_CERT */
-
-#ifdef CONFIG_EXAMPLE_EAP_METHOD_TLS
-extern uint8_t client_crt_start[] asm("_binary_wpa2_client_crt_start");
-extern uint8_t client_crt_end[]   asm("_binary_wpa2_client_crt_end");
-extern uint8_t client_key_start[] asm("_binary_wpa2_client_key_start");
-extern uint8_t client_key_end[]   asm("_binary_wpa2_client_key_end");
-#endif /* CONFIG_EXAMPLE_EAP_METHOD_TLS */
-
 static void event_handler(void* arg, esp_event_base_t event_base, 
                                 int32_t event_id, void* event_data)
 {
@@ -95,15 +73,6 @@ static void event_handler(void* arg, esp_event_base_t event_base,
 
 static void initialise_wifi(void)
 {
-#ifdef CONFIG_EXAMPLE_VALIDATE_SERVER_CERT
-    unsigned int ca_pem_bytes = ca_pem_end - ca_pem_start;
-#endif /* CONFIG_EXAMPLE_VALIDATE_SERVER_CERT */
-
-#ifdef CONFIG_EXAMPLE_EAP_METHOD_TLS
-    unsigned int client_crt_bytes = client_crt_end - client_crt_start;
-    unsigned int client_key_bytes = client_key_end - client_key_start;
-#endif /* CONFIG_EXAMPLE_EAP_METHOD_TLS */
-
     ESP_ERROR_CHECK(esp_netif_init());
     wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -124,15 +93,6 @@ static void initialise_wifi(void)
     ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
     ESP_ERROR_CHECK( esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
     ESP_ERROR_CHECK( esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EXAMPLE_EAP_ID, strlen(EXAMPLE_EAP_ID)) );
-
-#ifdef CONFIG_EXAMPLE_VALIDATE_SERVER_CERT
-    ESP_ERROR_CHECK( esp_wifi_sta_wpa2_ent_set_ca_cert(ca_pem_start, ca_pem_bytes) );
-#endif /* CONFIG_EXAMPLE_VALIDATE_SERVER_CERT */
-
-#ifdef CONFIG_EXAMPLE_EAP_METHOD_TLS
-    ESP_ERROR_CHECK( esp_wifi_sta_wpa2_ent_set_cert_key(client_crt_start, client_crt_bytes,\
-    		client_key_start, client_key_bytes, NULL, 0) );
-#endif /* CONFIG_EXAMPLE_EAP_METHOD_TLS */
 
 #if defined CONFIG_EXAMPLE_EAP_METHOD_PEAP || CONFIG_EXAMPLE_EAP_METHOD_TTLS
     ESP_ERROR_CHECK( esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EXAMPLE_EAP_USERNAME, strlen(EXAMPLE_EAP_USERNAME)) );
