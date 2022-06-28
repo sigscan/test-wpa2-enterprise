@@ -16,7 +16,7 @@ jobs:
           path: ${{ env.main-path }}
 
       - name: Build
-        uses: volca/esp-idf-v4-container-action@v4.4.1
+        uses: volca/esp-idf-v4-container-action@v4.4
         id: idf_build
         with:
           entrypoint: /github/workspace/${{ env.main-path }}/tools/action-build.sh
