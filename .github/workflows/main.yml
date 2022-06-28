@@ -18,8 +18,6 @@ jobs:
       - name: Build
         uses: volca/esp-idf-v4-container-action@v4.4.1
         id: idf_build
-        env:
-          UNKNOWN_KEY: ${{ secrets.UNKNOWN_KEY }}
         with:
           entrypoint: /github/workspace/${{ env.main-path }}/tools/action-build.sh
 
