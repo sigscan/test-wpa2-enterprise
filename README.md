@@ -1,3 +1,4 @@
+#sire
 # WPA2 Enterprise Example
 
 This example shows how ESP32 connects to AP with wpa2 enterprise encryption. Example does the following steps:
