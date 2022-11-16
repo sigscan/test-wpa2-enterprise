@@ -1,5 +1,7 @@
 # WPA2 Enterprise Example
 
+Addai
+
 This example shows how ESP32 connects to AP with wpa2 enterprise encryption. Example does the following steps:
 
 1. Install CA certificate which is optional.
